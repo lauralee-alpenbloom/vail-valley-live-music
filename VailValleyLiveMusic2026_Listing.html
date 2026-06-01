@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vail Valley Live Music 2026 — Full Event Listing</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    background: #ffffff;
+    color: #111111;
+  }
+
+  /* ── Header ── */
+  .listing-header {
+    background: #111111;
+    color: #ffffff;
+    padding: 40px 24px 32px;
+    text-align: center;
+    border-bottom: 3px solid #111;
+  }
+  .listing-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .listing-header p {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    opacity: 0.6;
+    text-transform: uppercase;
+  }
+
+  /* ── Filter bar ── */
+  .filter-bar {
+    background: #ffffff;
+    border-bottom: 1px solid #dddddd;
+    padding: 12px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .filter-bar input,
+  .filter-bar select {
+    padding: 8px 12px;
+    border: 1px solid #bbbbbb;
+    border-radius: 0;
+    font-size: 0.85rem;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    background: #ffffff;
+    color: #111111;
+    height: 36px;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .filter-bar select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23111'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+  .filter-bar input { flex: 1; min-width: 180px; }
+  .filter-bar select { min-width: 155px; }
+  .filter-bar input:focus,
+  .filter-bar select:focus { outline: 2px solid #111; outline-offset: 0; }
+
+  /* ── Upcoming toggle ── */
+  .upcoming-toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; color: #444; white-space: nowrap;
+    cursor: pointer; user-select: none;
+    letter-spacing: 0.03em;
+  }
+  .toggle-switch {
+    position: relative; width: 38px; height: 20px;
+    background: #cccccc; border-radius: 0;
+    transition: background .2s; flex-shrink: 0; cursor: pointer;
+    border: 1px solid #aaaaaa;
+  }
+  .toggle-switch.on { background: #111111; border-color: #111; }
+  .toggle-switch::after {
+    content: ''; position: absolute;
+    width: 16px; height: 16px;
+    background: white; top: 1px; left: 1px;
+    transition: left .2s;
+    border: 1px solid #aaaaaa;
+  }
+  .toggle-switch.on::after { left: 19px; border-color: #555; }
+
+  .filter-right {
+    margin-left: auto; display: flex;
+    align-items: center; gap: 16px;
+  }
+  .filter-count {
+    font-size: 0.8rem; color: #888888;
+    white-space: nowrap; letter-spacing: 0.03em;
+  }
+  .clear-btn {
+    font-size: 0.78rem; color: #111111;
+    cursor: pointer; text-decoration: underline;
+    white-space: nowrap; background: none; border: none;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.03em;
+  }
+  .clear-btn:hover { color: #555555; }
+
+  /* ── Event list ── */
+  .events-container { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+
+  .date-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #999999;
+    padding: 20px 0 8px;
+    border-bottom: 1px solid #eeeeee;
+    margin-bottom: 8px;
+  }
+  .date-label.past-date { opacity: 0.4; }
+
+  .event-card {
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    border-radius: 0;
+    padding: 14px 16px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: border-color .15s, opacity .15s;
+  }
+  .event-card.past { opacity: 0.4; }
+  .event-card.has-url { cursor: pointer; }
+  .event-card.has-url:hover { border-color: #111111; }
+
+  /* thin left-border accent instead of colored dot */
+  .event-card.free-card  { border-left: 3px solid #111111; }
+  .event-card.paid-card  { border-left: 3px solid #aaaaaa; }
+
+  .card-main { flex: 1; min-width: 0; }
+  .card-artist {
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #111111;
+  }
+  .card-series {
+    font-size: 0.76rem;
+    color: #888888;
+    margin-top: 3px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .card-venue {
+    font-size: 0.78rem;
+    color: #555555;
+    margin-top: 6px;
+  }
+
+  .card-right { text-align: right; flex-shrink: 0; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid #111111;
+  }
+  .badge-free { background: #111111; color: #ffffff; }
+  .badge-paid { background: #ffffff; color: #111111; }
+
+  .card-time {
+    font-size: 0.76rem;
+    color: #888888;
+    margin-top: 5px;
+    letter-spacing: 0.02em;
+  }
+  .more-link {
+    display: inline-block;
+    margin-top: 5px;
+    font-size: 0.73rem;
+    color: #111111;
+    text-decoration: underline;
+    letter-spacing: 0.03em;
+  }
+  .more-link:hover { color: #555555; }
+
+  .no-results {
+    text-align: center;
+    padding: 60px 0;
+    color: #aaaaaa;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 580px) {
+    .listing-header h2 { font-size: 1.2rem; }
+    .filter-right { margin-left: 0; width: 100%; justify-content: space-between; }
+    .event-card { flex-wrap: wrap; }
+    .card-right { width: 100%; text-align: left; display: flex; gap: 10px; align-items: center; margin-top: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="listing-header">
+  <h2>Vail Valley Live Music 2026</h2>
+  <p>Search by artist &middot; filter by location, series, or cost &middot; toggle upcoming only</p>
+</div>
+
+<div class="filter-bar">
+  <input type="text" id="search" placeholder="Search artist, venue, or series…" oninput="render()">
+
+  <select id="townFilter" onchange="render()">
+    <option value="">All Locations</option>
+  </select>
+
+  <select id="seriesFilter" onchange="render()">
+    <option value="">All Series</option>
+  </select>
+
+  <select id="paidFilter" onchange="render()">
+    <option value="">Free &amp; Paid</option>
+    <option value="Free">Free only</option>
+    <option value="Paid">Paid only</option>
+  </select>
+
+  <div class="filter-right">
+    <label class="upcoming-toggle" onclick="toggleUpcoming()">
+      <div class="toggle-switch on" id="upcomingToggle"></div>
+      Upcoming only
+    </label>
+    <span class="filter-count" id="count"></span>
+    <button class="clear-btn" onclick="clearFilters()">Clear filters</button>
+  </div>
+</div>
+
+<div class="events-container" id="events"></div>
+
+<script>
+const ALL_EVENTS = [{"date": "2026-05-24", "month": "May", "day": 24, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Orchard Creek Band", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm. Season opener.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-05-31", "month": "May", "day": 31, "dow": "Sun", "series": "SunsetLIVE!", "artist": "String Creek Band", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-06-03", "month": "Jun", "day": 3, "dow": "Wed", "series": "Amp Summer Concert", "artist": "Trey Anastasio (acoustic)", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "Limited availability. 6:30pm.", "time": "6:30pm\u20138:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-06-04", "month": "Jun", "day": 4, "dow": "Thu", "series": "Mountains of Music / GoPro", "artist": "Mountain Grass Unit w/ Surf Hat", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "GoPro Mountain Games. 6:30pm.", "time": "6:30pm\u20138:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-06-05", "month": "Jun", "day": 5, "dow": "Fri", "series": "Mountains of Music / GoPro", "artist": "Wilderado & Michael Marcagi w/ Steph Strings", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "GoPro Mountain Games. 6:30pm. Nearly sold out.", "time": "6:30pm\u20138:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-06-06", "month": "Jun", "day": 6, "dow": "Sat", "series": "Mountains of Music / GoPro", "artist": "Allman Betts Band w/ Eric Krasno & Friends", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "GoPro Mountain Games. 6:30pm. Nearly sold out.", "time": "6:30pm\u20138:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-06-07", "month": "Jun", "day": 7, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Twang Box", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-06-10", "month": "Jun", "day": 10, "dow": "Wed", "series": "AvonLIVE!", "artist": "The Original Wailers ft. Al Anderson / O'Connor Brothers Band", "paid": "Free", "venue": "Nottingham Park / Avon Pavilion", "town": "Avon", "notes": "5:30pm doors, 6pm music. Headliner: Original Wailers. Opener: O'Connor Brothers Band.", "time": "5:30pm\u20137:30pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-06-14", "month": "Jun", "day": 14, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Town Cavalry", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-06-16", "month": "Jun", "day": 16, "dow": "Tue", "series": "Hot Summer Nights", "artist": "The Main Squeeze", "paid": "Free", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "5:30pm gates, 6:30pm music. Funk-rock-soul quintet from LA.", "time": "5:30pm\u20137:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-06-17", "month": "Jun", "day": 17, "dow": "Wed", "series": "AvonLIVE!", "artist": "Karl Denson's Tiny Universe / Whirled Peas", "paid": "Free", "venue": "Nottingham Park / Avon Pavilion", "town": "Avon", "notes": "5:30pm doors, 6pm music. Headliner: KDTU. Opener: Whirled Peas.", "time": "5:30pm\u20137:30pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-06-18", "month": "Jun", "day": 18, "dow": "Thu", "series": "BC Unplugged", "artist": "Young Dubliners", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-06-19", "month": "Jun", "day": 19, "dow": "Fri", "series": "Amp Summer Concert", "artist": "O.A.R.", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6:30pm. Limited availability.", "time": "6:30pm\u20138:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-06-20", "month": "Jun", "day": 20, "dow": "Sat", "series": "Colorado Showcase", "artist": "Big Dopes", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. Every Saturday Jun 20 \u2013 Sep 12 for live Colorado music. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-06-21", "month": "Jun", "day": 21, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Hand Turkey", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-06-21", "month": "Jun", "day": 21, "dow": "Sun", "series": "Creekside Park Concerts", "artist": "Daniel Rodriguez", "paid": "Free", "venue": "Creekside Park", "town": "Beaver Creek", "notes": "4:30\u20136pm. Complimentary. Creekside Park, Beaver Creek.", "time": "4:30pm\u20136pm", "url": "https://www.beavercreek.com"}, {"date": "2026-06-23", "month": "Jun", "day": 23, "dow": "Tue", "series": "Hot Summer Nights", "artist": "Jammy Buffet", "paid": "Free", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "5:30pm gates, 6:30pm music. Boulder-based Jimmy Buffett tribute.", "time": "5:30pm\u20137:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-06-24", "month": "Jun", "day": 24, "dow": "Wed", "series": "AvonLIVE!", "artist": "HeartByrne (Talking Heads tribute) / The Chaotics", "paid": "Free", "venue": "Nottingham Park / Avon Pavilion", "town": "Avon", "notes": "5:30pm doors, 6pm music. Headliner: HeartByrne. Opener: The Chaotics.", "time": "5:30pm\u20137:30pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-06-25", "month": "Jun", "day": 25, "dow": "Thu", "series": "Bravo! Vail", "artist": "Academy of St Martin in the Fields \u2013 Beethoven The Middle Concertos", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. With McDermott.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-06-25", "month": "Jun", "day": 25, "dow": "Thu", "series": "BC Unplugged", "artist": "The Drifters", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-06-26", "month": "Jun", "day": 26, "dow": "Thu", "series": "Minturn Concert Series", "artist": "101st Army Band", "paid": "Free", "venue": "Town of Minturn (park)", "town": "Minturn", "notes": "6-8pm. Hosted by the Town of Minturn and the Minturn Community Fund. BYOB, no glass. Dogs on leash welcome.", "time": "6pm\u20138pm", "url": "https://www.minturn.org"}, {"date": "2026-06-27", "month": "Jun", "day": 27, "dow": "Sat", "series": "Bravo! Vail", "artist": "Academy of St Martin in the Fields \u2013 Beethoven The First and The Emperor", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Anne-Marie McDermott, piano.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-06-27", "month": "Jun", "day": 27, "dow": "Sat", "series": "Vilar Performing Arts Center", "artist": "The Wallflowers", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm. Limited availability. 30th Anniversary Tour.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-06-27", "month": "Jun", "day": 27, "dow": "Sat", "series": "Colorado Showcase", "artist": "Helmut's 90th Birthday Celebration", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. World class musician and entertainer. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-06-28", "month": "Jun", "day": 28, "dow": "Sun", "series": "Bravo! Vail", "artist": "Academy of St Martin in the Fields w/ Joshua Bell", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Nearly sold out.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-06-28", "month": "Jun", "day": 28, "dow": "Sun", "series": "Vilar Performing Arts Center", "artist": "Brothers Osborne w/ Cassidy Daniels", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-06-28", "month": "Jun", "day": 28, "dow": "Sun", "series": "SunsetLIVE!", "artist": "The Knight Groove", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-06-29", "month": "Jun", "day": 29, "dow": "Mon", "series": "Vilar Performing Arts Center", "artist": "Matteo Bocelli", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm. Limited availability.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-06-30", "month": "Jun", "day": 30, "dow": "Tue", "series": "Hot Summer Nights", "artist": "The Long Run (Eagles tribute)", "paid": "Free", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "5:30pm gates, 6:30pm music. Colorado's premier Eagles tribute.", "time": "5:30pm\u20137:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-01", "month": "Jul", "day": 1, "dow": "Wed", "series": "Vilar Performing Arts Center", "artist": "Ricky Skaggs & Kentucky Thunder", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-01", "month": "Jul", "day": 1, "dow": "Wed", "series": "Creekside Park Concerts", "artist": "Saje", "paid": "Free", "venue": "Creekside Park", "town": "Beaver Creek", "notes": "5:30\u20137pm. Complimentary. Creekside Park, Beaver Creek.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com"}, {"date": "2026-07-02", "month": "Jul", "day": 2, "dow": "Thu", "series": "Bravo! Vail", "artist": "Dallas Symphony Orchestra \u2013 Music of the Movies", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Jeff Tyzik conducting.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-02", "month": "Jul", "day": 2, "dow": "Thu", "series": "Vilar Performing Arts Center", "artist": "The James Hunter Six", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-02", "month": "Jul", "day": 2, "dow": "Thu", "series": "ShowDown Town", "artist": "The Chaotics", "paid": "Free", "venue": "Eagle Town Park", "town": "Eagle", "notes": "6:30pm. Eagle Valley classic rock staple, 30+ years.", "time": "6:30pm\u20138:30pm", "url": "https://www.eagleco.gov"}, {"date": "2026-07-02", "month": "Jul", "day": 2, "dow": "Thu", "series": "BC Unplugged", "artist": "Keith Anderson", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-07-03", "month": "Jul", "day": 3, "dow": "Fri", "series": "Amp Summer Concert", "artist": "Myles Smith", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-04", "month": "Jul", "day": 4, "dow": "Sat", "series": "Independence Day Celebration", "artist": "Little Texas (headliner) / Tyller Gummersol / Creedenced / Broken Arrow: Tribute to Neil Young", "paid": "Paid", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "2-10pm. VIP $175, Kids VIP $75. Also free general access areas. Fireworks weather permitting. Headliner 8-9:30pm.", "time": "2pm\u201310pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-07-05", "month": "Jul", "day": 5, "dow": "Sun", "series": "Bravo! Vail", "artist": "Dallas Symphony Orchestra \u2013 Disco Divas", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Jeff Tyzik conducting.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-05", "month": "Jul", "day": 5, "dow": "Sun", "series": "Vilar Performing Arts Center", "artist": "MOMIX: Botanica", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm. Contemporary dance.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-06", "month": "Jul", "day": 6, "dow": "Mon", "series": "Bravo! Vail", "artist": "Dallas Symphony Orchestra \u2013 Tchaikovsky Violin Concerto", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Luisi and Kavakos.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-08", "month": "Jul", "day": 8, "dow": "Wed", "series": "AvonLIVE!", "artist": "Forever Dangerous (Michael Jackson tribute) / Beau Thomas Band", "paid": "Free", "venue": "Nottingham Park / Avon Pavilion", "town": "Avon", "notes": "5:30pm doors, 6pm music. Headliner: Forever Dangerous. Opener: Beau Thomas Band.", "time": "5:30pm\u20137:30pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-07-08", "month": "Jul", "day": 8, "dow": "Wed", "series": "Bravo! Vail", "artist": "Dallas Symphony Orchestra \u2013 Madama Butterfly in Concert", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Fabio Luisi conducting.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-08", "month": "Jul", "day": 8, "dow": "Wed", "series": "Vilar Performing Arts Center", "artist": "Electric Avenue: The 80s MTV Experience", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-09", "month": "Jul", "day": 9, "dow": "Thu", "series": "Vilar Performing Arts Center", "artist": "Graham Nash", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-09", "month": "Jul", "day": 9, "dow": "Thu", "series": "ShowDown Town", "artist": "Bonfire Dub", "paid": "Free", "venue": "Eagle Town Park", "town": "Eagle", "notes": "6:30pm. Folk/reggae/Rocky Mountain Americana.", "time": "6:30pm\u20138:30pm", "url": "https://www.eagleco.gov"}, {"date": "2026-07-09", "month": "Jul", "day": 9, "dow": "Thu", "series": "BC Unplugged", "artist": "BoDeans", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-07-10", "month": "Jul", "day": 10, "dow": "Fri", "series": "Bravo! Vail", "artist": "Philadelphia Orchestra \u2013 Nezet-Seguin and Hamelin", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-10", "month": "Jul", "day": 10, "dow": "Fri", "series": "Vilar Performing Arts Center", "artist": "Graham Nash", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm. Limited availability.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-10", "month": "Jul", "day": 10, "dow": "Thu", "series": "Minturn Concert Series", "artist": "Easy Jim", "paid": "Free", "venue": "Town of Minturn (park)", "town": "Minturn", "notes": "6-8pm. Hosted by the Town of Minturn and the Minturn Community Fund. BYOB, no glass. Dogs on leash welcome.", "time": "6pm\u20138pm", "url": "https://www.minturn.org"}, {"date": "2026-07-11", "month": "Jul", "day": 11, "dow": "Sat", "series": "Bravo! Vail", "artist": "Philadelphia Orchestra \u2013 Hadelich Performs Brahms Violin Concerto", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-11", "month": "Jul", "day": 11, "dow": "Sat", "series": "Vilar Performing Arts Center", "artist": "Futurebirds", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-11", "month": "Jul", "day": 11, "dow": "Sat", "series": "Colorado Showcase", "artist": "El Paso Lasso", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. Rock cover band. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-07-12", "month": "Jul", "day": 12, "dow": "Sun", "series": "Bravo! Vail", "artist": "Philadelphia Orchestra \u2013 Nezet-Seguin Conducts Beethoven 9", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Nearly sold out.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-12", "month": "Jul", "day": 12, "dow": "Sun", "series": "SunsetLIVE!", "artist": "The Evolution Live", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-07-14", "month": "Jul", "day": 14, "dow": "Tue", "series": "Hot Summer Nights", "artist": "Wuki", "paid": "Free", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "5:30pm gates, 6:30pm music. Grammy-nominated Denver DJ/producer.", "time": "5:30pm\u20137:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-15", "month": "Jul", "day": 15, "dow": "Wed", "series": "AvonLIVE!", "artist": "Fantastic Cat / Sway Wild", "paid": "Free", "venue": "Nottingham Park / Avon Pavilion", "town": "Avon", "notes": "5:30pm doors, 6pm music. Headliner: Fantastic Cat. Opener: Sway Wild.", "time": "5:30pm\u20137:30pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-07-15", "month": "Jul", "day": 15, "dow": "Wed", "series": "Bravo! Vail", "artist": "Philadelphia Orchestra \u2013 Alsop and Himari", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-16", "month": "Jul", "day": 16, "dow": "Thu", "series": "Bravo! Vail", "artist": "Philadelphia Orchestra \u2013 Alsop and Sham", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-16", "month": "Jul", "day": 16, "dow": "Thu", "series": "ShowDown Town", "artist": "Chinaflower Suncats (Grateful Dead tribute)", "paid": "Free", "venue": "Eagle Town Park", "town": "Eagle", "notes": "6:30pm. Colorado-based Dead tribute band.", "time": "6:30pm\u20138:30pm", "url": "https://www.eagleco.gov"}, {"date": "2026-07-16", "month": "Jul", "day": 16, "dow": "Thu", "series": "BC Unplugged", "artist": "Freddie Jones Band", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-07-17", "month": "Jul", "day": 17, "dow": "Fri", "series": "Bravo! Vail", "artist": "Philadelphia Orchestra \u2013 Disney's Fantasia in Concert", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-17", "month": "Jul", "day": 17, "dow": "Fri", "series": "Vilar Performing Arts Center", "artist": "Maren Morris", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-17", "month": "Jul", "day": 17, "dow": "Fri", "series": "Creekside Park Concerts", "artist": "David Nail", "paid": "Free", "venue": "Creekside Park", "town": "Beaver Creek", "notes": "5:30\u20137pm. Complimentary. Creekside Park, Beaver Creek.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com"}, {"date": "2026-07-17", "month": "Jul", "day": 17, "dow": "Thu", "series": "Minturn Concert Series", "artist": "Bonfire Dub", "paid": "Free", "venue": "Town of Minturn (park)", "town": "Minturn", "notes": "6-8pm. Hosted by the Town of Minturn and the Minturn Community Fund. BYOB, no glass. Dogs on leash welcome.", "time": "6pm\u20138pm", "url": "https://www.minturn.org"}, {"date": "2026-07-18", "month": "Jul", "day": 18, "dow": "Sat", "series": "Colorado Showcase", "artist": "Easy Jim: Music of the Grateful Dead", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. Grateful Dead cover band. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-07-19", "month": "Jul", "day": 19, "dow": "Sun", "series": "Vilar Performing Arts Center", "artist": "Glenn Miller Orchestra", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-19", "month": "Jul", "day": 19, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Rhyme and Reason", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-07-21", "month": "Jul", "day": 21, "dow": "Tue", "series": "Hot Summer Nights", "artist": "Jamestown Revival", "paid": "Free", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "5:30pm gates, 6:30pm music. Country-folk duo; composed Broadway's The Outsiders score.", "time": "5:30pm\u20137:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-22", "month": "Jul", "day": 22, "dow": "Wed", "series": "AvonLIVE!", "artist": "Dogs In A Pile", "paid": "Free", "venue": "Nottingham Park / Avon Pavilion", "town": "Avon", "notes": "5:30pm doors, 6pm music. No opener listed.", "time": "5:30pm\u20137:30pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-07-22", "month": "Jul", "day": 22, "dow": "Wed", "series": "Bravo! Vail", "artist": "New York Philharmonic \u2013 Korngold Violin Concerto", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Chan and Ehnes.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-23", "month": "Jul", "day": 23, "dow": "Thu", "series": "Vilar Performing Arts Center", "artist": "Bruce Cockburn", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-23", "month": "Jul", "day": 23, "dow": "Thu", "series": "ShowDown Town", "artist": "The Mammoths", "paid": "Free", "venue": "Eagle Town Park", "town": "Eagle", "notes": "6:30pm. Austin TX fuzz rock, '70s psychedelia meets heavy rock.", "time": "6:30pm\u20138:30pm", "url": "https://www.eagleco.gov"}, {"date": "2026-07-23", "month": "Jul", "day": 23, "dow": "Thu", "series": "BC Unplugged", "artist": "Micky & The Motorcars", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-07-24", "month": "Jul", "day": 24, "dow": "Fri", "series": "Bravo! Vail", "artist": "New York Philharmonic \u2013 Mozart Concerto for Two Pianos", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Bronfman and McDermott.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-24", "month": "Jul", "day": 24, "dow": "Fri", "series": "Vail Summer Sessions", "artist": "Magic City Hippies", "paid": "Free", "venue": "Base of Gondola One", "town": "Vail", "notes": "Presented by Toyota. Free.", "time": "", "url": "https://www.vail.com"}, {"date": "2026-07-24", "month": "Jul", "day": 24, "dow": "Thu", "series": "Minturn Concert Series", "artist": "Kevin Daniel & the Bottom Line", "paid": "Free", "venue": "Town of Minturn (park)", "town": "Minturn", "notes": "6-8pm. Hosted by the Town of Minturn and the Minturn Community Fund. BYOB, no glass. Dogs on leash welcome.", "time": "6pm\u20138pm", "url": "https://www.minturn.org"}, {"date": "2026-07-25", "month": "Jul", "day": 25, "dow": "Sat", "series": "Bravo! Vail", "artist": "New York Philharmonic \u2013 Prokofiev Violin Concerto", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Rouvali and Radulovic.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-25", "month": "Jul", "day": 25, "dow": "Sat", "series": "Vail Summer Sessions", "artist": "Marlon Funaki w/ Olivia Barnes", "paid": "Free", "venue": "Base of Gondola One", "town": "Vail", "notes": "6pm Marlon Funaki, 4:45pm Olivia Barnes. Free, presented by Toyota.", "time": "6pm\u20138pm", "url": "https://www.vail.com"}, {"date": "2026-07-25", "month": "Jul", "day": 25, "dow": "Sat", "series": "Colorado Showcase", "artist": "The Grocery Story", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. Rock & roll meets Sunday morning revival. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-07-26", "month": "Jul", "day": 26, "dow": "Sun", "series": "Bravo! Vail", "artist": "New York Philharmonic \u2013 Mozart and Sibelius", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Rouvali and Tao.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-26", "month": "Jul", "day": 26, "dow": "Sun", "series": "Vail Summer Sessions", "artist": "Miki Fiki", "paid": "Free", "venue": "Base of Gondola One", "town": "Vail", "notes": "Free, presented by Toyota.", "time": "", "url": "https://www.vail.com"}, {"date": "2026-07-26", "month": "Jul", "day": 26, "dow": "Sun", "series": "Creekside Park Concerts", "artist": "The Petty Nicks Experience", "paid": "Free", "venue": "Creekside Park", "town": "Beaver Creek", "notes": "4:30\u20136pm. Complimentary. Creekside Park, Beaver Creek.", "time": "4:30pm\u20136pm", "url": "https://www.beavercreek.com"}, {"date": "2026-07-26", "month": "Jul", "day": 26, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Hobo Village", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-07-27", "month": "Jul", "day": 27, "dow": "Mon", "series": "Vilar Performing Arts Center", "artist": "Yuja Wang & People of Earth", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-28", "month": "Jul", "day": 28, "dow": "Tue", "series": "Bravo! Vail", "artist": "New York Philharmonic w/ Emanuel Ax", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-29", "month": "Jul", "day": 29, "dow": "Wed", "series": "AvonLIVE!", "artist": "The Rumble ft. Chief Joseph Boudreaux Jr. / Frisco Funk Collective", "paid": "Free", "venue": "Nottingham Park / Avon Pavilion", "town": "Avon", "notes": "5:30pm doors, 6pm music. 7 Grammy-nominated New Orleans musicians.", "time": "5:30pm\u20137:30pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-07-29", "month": "Jul", "day": 29, "dow": "Wed", "series": "Bravo! Vail", "artist": "New York Philharmonic \u2013 French Masterworks", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-07-30", "month": "Jul", "day": 30, "dow": "Thu", "series": "Vilar Performing Arts Center", "artist": "Moontricks", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-07-30", "month": "Jul", "day": 30, "dow": "Thu", "series": "BC Unplugged", "artist": "Yasmin Williams", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-07-30", "month": "Jul", "day": 30, "dow": "Thu", "series": "ShowDown Town", "artist": "Babaux and the Peacemakers", "paid": "Free", "venue": "Eagle Town Park", "town": "Eagle", "notes": "6:30pm. Colorado roots-rock quartet. Swampy bayou blues, Southern rock, and Americana. Blankets and chairs welcome.", "time": "6:30pm\u20138:30pm", "url": "https://www.eagleco.gov"}, {"date": "2026-07-31", "month": "Jul", "day": 31, "dow": "Thu", "series": "Minturn Concert Series", "artist": "The Evolution Live", "paid": "Free", "venue": "Town of Minturn (park)", "town": "Minturn", "notes": "6-8pm. Hosted by the Town of Minturn and the Minturn Community Fund. BYOB, no glass. Dogs on leash welcome.", "time": "6pm\u20138pm", "url": "https://www.minturn.org"}, {"date": "2026-07-31", "month": "Jul", "day": 31, "dow": "Fri", "series": "BC Arts Festival", "artist": "38th Annual Beaver Creek Arts Festival", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "Free event. 100+ artists in the heart of Beaver Creek Village. Multi-day.", "time": "", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-01", "month": "Aug", "day": 1, "dow": "Sat", "series": "Colorado Showcase", "artist": "Laurie Dameron Duo", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. Jazz, blues, folk, and pop. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-01", "month": "Aug", "day": 1, "dow": "Sat", "series": "BC Arts Festival", "artist": "38th Annual Beaver Creek Arts Festival", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "Free event. 100+ artists in the heart of Beaver Creek Village.", "time": "", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-02", "month": "Aug", "day": 2, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Kory Montgomery", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-08-05", "month": "Aug", "day": 5, "dow": "Wed", "series": "AvonLIVE!", "artist": "Lindsay Lou / John Truscelli & Jess Rose Duo", "paid": "Free", "venue": "Nottingham Park / Avon Pavilion", "town": "Avon", "notes": "5:30pm doors, 6pm music. Headliner: Lindsay Lou. Opener: John Truscelli & Jess Rose Duo.", "time": "5:30pm\u20137:30pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-08-06", "month": "Aug", "day": 6, "dow": "Thu", "series": "Vilar Performing Arts Center", "artist": "One Night of Queen", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm. Limited availability. Performed by Garry Mullen & The Works.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-08-06", "month": "Aug", "day": 6, "dow": "Thu", "series": "BC Unplugged", "artist": "The Samples", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-06", "month": "Aug", "day": 6, "dow": "Thu", "series": "ShowDown Town", "artist": "The Williams Brothers Band", "paid": "Free", "venue": "Eagle Town Park", "town": "Eagle", "notes": "6:30pm. East Bay funk/outlaw country/Americana.", "time": "6:30pm\u20138:30pm", "url": "https://www.eagleco.gov"}, {"date": "2026-08-07", "month": "Aug", "day": 7, "dow": "Thu", "series": "Minturn Concert Series", "artist": "Scott Rednor Band", "paid": "Free", "venue": "Town of Minturn (park)", "town": "Minturn", "notes": "6-8pm. Hosted by the Town of Minturn and the Minturn Community Fund. BYOB, no glass. Dogs on leash welcome.", "time": "6pm\u20138pm", "url": "https://www.minturn.org"}, {"date": "2026-08-08", "month": "Aug", "day": 8, "dow": "Sat", "series": "Colorado Showcase", "artist": "D'Lovelies", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. Blues, swing, jazz, and original Americana. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-09", "month": "Aug", "day": 9, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Brian Spotts", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-08-09", "month": "Aug", "day": 9, "dow": "Sun", "series": "Creekside Park Concerts", "artist": "Lao Tizer Band", "paid": "Free", "venue": "Creekside Park", "town": "Beaver Creek", "notes": "3\u20134:30pm. Complimentary. Creekside Park, Beaver Creek.", "time": "3pm\u20134:30pm", "url": "https://www.beavercreek.com"}, {"date": "2026-08-10", "month": "Aug", "day": 10, "dow": "Mon", "series": "Vilar Performing Arts Center", "artist": "Don Was and the Pan-Detroit Ensemble", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-08-12", "month": "Aug", "day": 12, "dow": "Wed", "series": "Vilar Performing Arts Center", "artist": "Django Festival Allstars", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-08-12", "month": "Aug", "day": 12, "dow": "Wed", "series": "AvonLIVE!", "artist": "Assembly of Dust / Bonfire Dub", "paid": "Free", "venue": "Nottingham Park / Avon Pavilion", "town": "Avon", "notes": "5:30pm doors, 6pm music. Headliner: Assembly of Dust. Opener: Bonfire Dub.", "time": "5:30pm\u20137:30pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-08-13", "month": "Aug", "day": 13, "dow": "Thu", "series": "ShowDown Town", "artist": "MJT The Band", "paid": "Free", "venue": "Eagle Town Park", "town": "Eagle", "notes": "6:30pm. Sibling alt-progressive soul/rock trio from Long Island. Season finale.", "time": "6:30pm\u20138:30pm", "url": "https://www.eagleco.gov"}, {"date": "2026-08-13", "month": "Aug", "day": 13, "dow": "Thu", "series": "Amp Summer Concert", "artist": "Trombone Shorty & Orleans Avenue + St. Paul & The Broken Bones", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6pm. Nearly sold out.", "time": "6pm\u20138pm", "url": "https://www.grfavail.com"}, {"date": "2026-08-13", "month": "Aug", "day": 13, "dow": "Thu", "series": "BC Unplugged", "artist": "Silverada", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-14", "month": "Aug", "day": 14, "dow": "Fri", "series": "Amp Summer Concert", "artist": "Greensky Bluegrass", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.grfavail.com"}, {"date": "2026-08-14", "month": "Aug", "day": 14, "dow": "Thu", "series": "Minturn Concert Series", "artist": "Jubilingo", "paid": "Free", "venue": "Town of Minturn (park)", "town": "Minturn", "notes": "6-8pm. Hosted by the Town of Minturn and the Minturn Community Fund. BYOB, no glass. Dogs on leash welcome.", "time": "6pm\u20138pm", "url": "https://www.minturn.org"}, {"date": "2026-08-15", "month": "Aug", "day": 15, "dow": "Sat", "series": "Amp Summer Concert", "artist": "Greensky Bluegrass", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "7pm. Nearly sold out.", "time": "7pm\u20139pm", "url": "https://www.grfavail.com"}, {"date": "2026-08-15", "month": "Aug", "day": 15, "dow": "Sat", "series": "Colorado Showcase", "artist": "Radio Fluke", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. Dynamic alternative rock. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-16", "month": "Aug", "day": 16, "dow": "Sun", "series": "Amp Summer Concert", "artist": "Alison Krauss & Union Station", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "7:30pm.", "time": "7:30pm\u20139:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-08-16", "month": "Aug", "day": 16, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Big Sleeps", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-08-17", "month": "Aug", "day": 17, "dow": "Mon", "series": "Vilar Performing Arts Center", "artist": "The Bacon Brothers", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-08-18", "month": "Aug", "day": 18, "dow": "Tue", "series": "Amp Summer Concert", "artist": "The Australian Pink Floyd Show", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "7:30pm. Greatest Hits 26 tour.", "time": "7:30pm\u20139:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-08-19", "month": "Aug", "day": 19, "dow": "Wed", "series": "AvonLIVE!", "artist": "Vandelux (DJ Set) / Chiilla", "paid": "Free", "venue": "Nottingham Park / Avon Pavilion", "town": "Avon", "notes": "5:30pm doors, 6pm music. Headliner: Vandelux. Opener: Chiilla. Season finale.", "time": "5:30pm\u20137:30pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-08-19", "month": "Aug", "day": 19, "dow": "Wed", "series": "Vilar Performing Arts Center", "artist": "Little Feat", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm. Limited availability.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-08-20", "month": "Aug", "day": 20, "dow": "Thu", "series": "Vilar Performing Arts Center", "artist": "Tower of Power", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-08-20", "month": "Aug", "day": 20, "dow": "Thu", "series": "BC Unplugged", "artist": "King Cabbage Brass Band", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-21", "month": "Aug", "day": 21, "dow": "Fri", "series": "Amp Summer Concert", "artist": "Joe Russo's Almost Dead (JRAD)", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6:30pm. Limited availability. Grateful Dead tribute supergroup.", "time": "6:30pm\u20138:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-08-21", "month": "Aug", "day": 21, "dow": "Thu", "series": "Minturn Concert Series", "artist": "Heavy Diamond Ring", "paid": "Free", "venue": "Town of Minturn (park)", "town": "Minturn", "notes": "6-8pm. Hosted by the Town of Minturn and the Minturn Community Fund. BYOB, no glass. Dogs on leash welcome.", "time": "6pm\u20138pm", "url": "https://www.minturn.org"}, {"date": "2026-08-21", "month": "Aug", "day": 21, "dow": "Fri", "series": "Vilar Performing Arts Center", "artist": "Mike Super \u2013 Magic & Illusion", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "6:30pm.", "time": "6:30pm\u20138:30pm", "url": "https://www.vilarpac.org"}, {"date": "2026-08-22", "month": "Aug", "day": 22, "dow": "Sat", "series": "Colorado Showcase", "artist": "The Evolution", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. Yacht Rock, 80s, Caribbean, Latin, Reggae. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-23", "month": "Aug", "day": 23, "dow": "Sun", "series": "Amp Summer Concert", "artist": "Gov't Mule", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "7pm. Nearly sold out.", "time": "7pm\u20139pm", "url": "https://www.grfavail.com"}, {"date": "2026-08-23", "month": "Aug", "day": 23, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Blue Ox Boys", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-08-25", "month": "Aug", "day": 25, "dow": "Tue", "series": "Amp Summer Concert", "artist": "Ray LaMontagne", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "7pm. 1% of tickets left. Rescheduled from 8/26/25.", "time": "7pm\u20139pm", "url": "https://www.grfavail.com"}, {"date": "2026-08-25", "month": "Aug", "day": 25, "dow": "Tue", "series": "Vilar Performing Arts Center", "artist": "An Evening with Doris Kearns Goodwin", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "6pm. Speaker event.", "time": "6pm\u20138pm", "url": "https://www.vilarpac.org"}, {"date": "2026-08-27", "month": "Aug", "day": 27, "dow": "Thu", "series": "BC Unplugged", "artist": "Ricochet", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-28", "month": "Aug", "day": 28, "dow": "Thu", "series": "Minturn Concert Series", "artist": "The Turntable Revue", "paid": "Free", "venue": "Town of Minturn (park)", "town": "Minturn", "notes": "6-8pm. Hosted by the Town of Minturn and the Minturn Community Fund. BYOB, no glass. Dogs on leash welcome.", "time": "6pm\u20138pm", "url": "https://www.minturn.org"}, {"date": "2026-08-28", "month": "Aug", "day": 28, "dow": "Fri", "series": "Creekside Park Concerts", "artist": "Lovin Spoonful", "paid": "Free", "venue": "Creekside Park", "town": "Beaver Creek", "notes": "2\u20134pm. Complimentary. Creekside Park, Beaver Creek.", "time": "2pm\u20134pm", "url": "https://www.beavercreek.com"}, {"date": "2026-08-29", "month": "Aug", "day": 29, "dow": "Sat", "series": "Colorado Showcase", "artist": "Velvet Daydream", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. Rock. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-08-30", "month": "Aug", "day": 30, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Cactus Cat", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-09-01", "month": "Sep", "day": 1, "dow": "Tue", "series": "Hot Summer Nights", "artist": "The Wailers", "paid": "Free", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "5:30pm gates, 6:30pm music. Bob Marley's original backing band.", "time": "5:30pm\u20137:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-09-03", "month": "Sep", "day": 3, "dow": "Thu", "series": "Vilar Performing Arts Center", "artist": "Broadway Sings America 1776-2026", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-09-04", "month": "Sep", "day": 4, "dow": "Fri", "series": "BC Oktoberfest", "artist": "Oktoberfest (live music included)", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "Sep 4-6. Alpine send-off to summer. Live music, food, beer.", "time": "", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-09-05", "month": "Sep", "day": 5, "dow": "Sat", "series": "BC Oktoberfest", "artist": "Oktoberfest (live music included)", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "Sep 4-6. Alpine send-off to summer.", "time": "", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-09-06", "month": "Sep", "day": 6, "dow": "Sun", "series": "SunsetLIVE!", "artist": "Frisco Funk Collective", "paid": "Free", "venue": "The Terrace at Avon Pavilion", "town": "Avon", "notes": "6-8pm. Season finale.", "time": "6pm\u20138pm", "url": "https://www.avon.org/296/Special-Events"}, {"date": "2026-09-06", "month": "Sep", "day": 6, "dow": "Sun", "series": "BC Oktoberfest", "artist": "Oktoberfest (live music included)", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "Sep 4-6. Alpine send-off to summer.", "time": "", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-09-10", "month": "Sep", "day": 10, "dow": "Thu", "series": "BC Unplugged", "artist": "Lee Rocker of The Stray Cats", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-09-10", "month": "Sep", "day": 10, "dow": "Thu", "series": "Amp Summer Concert", "artist": "Cole Swindell w/ Zach John King", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.grfavail.com"}, {"date": "2026-09-11", "month": "Sep", "day": 11, "dow": "Fri", "series": "Amp Summer Concert", "artist": "String Cheese Incident", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6:30pm.", "time": "6:30pm\u20138:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-09-12", "month": "Sep", "day": 12, "dow": "Sat", "series": "Amp Summer Concert", "artist": "String Cheese Incident", "paid": "Paid", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "6:30pm. Nearly sold out.", "time": "6:30pm\u20138:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-09-12", "month": "Sep", "day": 12, "dow": "Sat", "series": "Colorado Showcase", "artist": "Selasee and Fafa Family", "paid": "Free", "venue": "Beaver Creek Rink Stage", "town": "Beaver Creek", "notes": "5:30-7pm. Reggae world music. Season finale.. No outside alcohol, no pets. Camp chairs welcome.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-09-15", "month": "Sep", "day": 15, "dow": "Tue", "series": "Hot Summer Nights", "artist": "Yesterday & Today: Interactive Beatles Experience", "paid": "Free", "venue": "Gerald R. Ford Amphitheater", "town": "Vail", "notes": "5:30pm gates, 6:30pm. Custom setlist from audience requests. Season finale.", "time": "5:30pm\u20137:30pm", "url": "https://www.grfavail.com"}, {"date": "2026-09-17", "month": "Sep", "day": 17, "dow": "Thu", "series": "BC Unplugged", "artist": "Yonder Mountain String Band", "paid": "Free", "venue": "Beaver Creek Village", "town": "Beaver Creek", "notes": "5:30-7pm. Free weekly Thursday concert series.", "time": "5:30pm\u20137pm", "url": "https://www.beavercreek.com/the-mountain/activities-and-events/free-summer-activities.aspx"}, {"date": "2026-09-17", "month": "Sep", "day": 17, "dow": "Thu", "series": "Vilar Performing Arts Center", "artist": "Esperanza Spalding", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-09-25", "month": "Sep", "day": 25, "dow": "Fri", "series": "Vilar Performing Arts Center", "artist": "Hiss Golden Messenger", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-10-02", "month": "Oct", "day": 2, "dow": "Fri", "series": "Vilar Performing Arts Center", "artist": "Tom Rush", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm. Love for the Locals pricing.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-10-07", "month": "Oct", "day": 7, "dow": "Wed", "series": "Vilar Performing Arts Center", "artist": "Alysha Brilla", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm. Love for the Locals pricing.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-10-13", "month": "Oct", "day": 13, "dow": "Tue", "series": "Vilar Performing Arts Center", "artist": "Punch Brothers", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-10-16", "month": "Oct", "day": 16, "dow": "Fri", "series": "Vilar Performing Arts Center", "artist": "Santa Rios: A Tribute to Carlos Santana", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm. Love for the Locals pricing.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}, {"date": "2026-10-27", "month": "Oct", "day": 27, "dow": "Tue", "series": "Vilar Performing Arts Center", "artist": "Yeison Landero", "paid": "Paid", "venue": "Vilar Performing Arts Center", "town": "Beaver Creek", "notes": "7pm. Love for the Locals pricing.", "time": "7pm\u20139pm", "url": "https://www.vilarpac.org"}];
+const ALL_SERIES = ["Amp Summer Concert", "AvonLIVE!", "BC Arts Festival", "BC Oktoberfest", "BC Unplugged", "Bravo! Vail", "Colorado Showcase", "Creekside Park Concerts", "Hot Summer Nights", "Independence Day Celebration", "Minturn Concert Series", "Mountains of Music / GoPro", "ShowDown Town", "SunsetLIVE!", "Vail Summer Sessions", "Vilar Performing Arts Center"];
+const ALL_TOWNS  = ["Avon", "Beaver Creek", "Eagle", "Minturn", "Vail"];
+const TODAY = '2026-06-01';
+
+const townSel   = document.getElementById('townFilter');
+const seriesSel = document.getElementById('seriesFilter');
+ALL_TOWNS.forEach(t  => { const o=document.createElement('option'); o.value=o.textContent=t;  townSel.appendChild(o); });
+ALL_SERIES.forEach(s => { const o=document.createElement('option'); o.value=o.textContent=s; seriesSel.appendChild(o); });
+
+let upcomingOnly = true;
+
+function toggleUpcoming() {
+  upcomingOnly = !upcomingOnly;
+  document.getElementById('upcomingToggle').classList.toggle('on', upcomingOnly);
+  render();
+}
+
+function clearFilters() {
+  document.getElementById('search').value = '';
+  document.getElementById('townFilter').value   = '';
+  document.getElementById('seriesFilter').value = '';
+  document.getElementById('paidFilter').value   = '';
+  upcomingOnly = true;
+  document.getElementById('upcomingToggle').classList.add('on');
+  render();
+}
+
+function render() {
+  const search = document.getElementById('search').value.toLowerCase().trim();
+  const town   = document.getElementById('townFilter').value;
+  const series = document.getElementById('seriesFilter').value;
+  const paid   = document.getElementById('paidFilter').value;
+
+  const filtered = ALL_EVENTS.filter(e => {
+    if (upcomingOnly && e.date < TODAY) return false;
+    if (search && !`${e.artist} ${e.series} ${e.venue} ${e.notes}`.toLowerCase().includes(search)) return false;
+    if (town   && e.town   !== town)   return false;
+    if (series && e.series !== series) return false;
+    if (paid   && e.paid   !== paid)   return false;
+    return true;
+  });
+
+  const base  = upcomingOnly ? ALL_EVENTS.filter(e => e.date >= TODAY).length : ALL_EVENTS.length;
+  document.getElementById('count').textContent = `${filtered.length} of ${base} events`;
+
+  const container = document.getElementById('events');
+  if (!filtered.length) {
+    container.innerHTML = '<div class="no-results">No events match your filters.</div>';
+    return;
+  }
+
+  const groups = {};
+  filtered.forEach(e => { if (!groups[e.date]) groups[e.date]=[]; groups[e.date].push(e); });
+
+  const DAYS   = {Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday',Sun:'Sunday'};
+  const MONTHS = {Jan:'January',Feb:'February',Mar:'March',Apr:'April',May:'May',Jun:'June',
+                  Jul:'July',Aug:'August',Sep:'September',Oct:'October',Nov:'November',Dec:'December'};
+
+  let html = '';
+  Object.keys(groups).sort().forEach(date => {
+    const evs   = groups[date];
+    const e0    = evs[0];
+    const isPast = date < TODAY;
+    const label  = `${DAYS[e0.dow]||e0.dow}, ${MONTHS[e0.month]||e0.month} ${e0.day}`;
+    html += `<div class="date-label${isPast?' past-date':''}">${label}</div>`;
+    evs.forEach(e => {
+      const isFree = e.paid === 'Free';
+      html += `
+        <div class="event-card ${isFree?'free-card':'paid-card'}${e.url?' has-url':''}${date<TODAY?' past':''}"
+             ${e.url?`onclick="window.open('${e.url}','_blank')"`:''}>
+          <div class="card-main">
+            <div class="card-artist">${e.artist || e.series}</div>
+            ${e.series && e.artist ? `<div class="card-series">${e.series}</div>` : ''}
+            <div class="card-venue">${e.venue}, ${e.town}</div>
+          </div>
+          <div class="card-right">
+            <span class="badge ${isFree?'badge-free':'badge-paid'}">${e.paid}</span>
+            ${e.time ? `<div class="card-time">${e.time}</div>` : ''}
+            ${e.url  ? `<a class="more-link" href="${e.url}" target="_blank" onclick="event.stopPropagation()">More info</a>` : ''}
+          </div>
+        </div>`;
+    });
+  });
+
+  container.innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>
